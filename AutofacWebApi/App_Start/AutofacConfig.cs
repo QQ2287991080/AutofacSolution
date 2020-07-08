@@ -1,7 +1,11 @@
 ﻿using Autofac;
+using Autofac.Builder;
 using Autofac.Integration.WebApi;
 using AutofacWebApi.Filters;
+using Domian;
 using Interfaces;
+using Services;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -28,13 +32,24 @@ namespace AutofacWebApi.App_Start
             var interfaces = ConfigurationManager.AppSettings["IServices"];
             var services = ConfigurationManager.AppSettings["Services"];//从配置文件中加载
             var assembly = Assembly.Load(services);//加载类库中所有类
-            builder.RegisterAssemblyTypes(assembly).Where(p=>baseType.IsAssignableFrom(p)).AsImplementedInterfaces();//service必须以Service结尾，必须继承自ISuperService &&p.Name.EndsWith("Service")
+            /* builder.RegisterAssemblyTypes(assembly).Where(p=>baseType.IsAssignableFrom(p)).AsImplementedInterfaces();*///service必须以Service结尾，必须继承自ISuperService &&p.Name.EndsWith("Service")
+            builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
+            var instance = new MyContext().GetInstance();
+
+            builder.RegisterType<BaseClient>().As<IBaseClient>().InstancePerLifetimeScope();
+            //builder.RegisterInstance<ISqlSugarClient>(instance).SingleInstance();
+
+            builder.Register(c => new MyContext().GetInstance()).As<ISqlSugarClient>().InstancePerLifetimeScope();
+
+            builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
+            //builder.RegisterType<ISqlSugarClient>().InstancePerLifetimeScope();
+            //builder.RegisterSource<>
             //获取http配置
             var configuration = GlobalConfiguration.Configuration;
             //注册api控制器
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
             //注册Autofac筛选器提供程序。
-            builder.Register(r => new AutofacActionFilter()).AsWebApiActionFilterForAllControllers();//将过滤器放到容器中
+            //builder.Register(r => new AutofacActionFilter()).AsWebApiActionFilterForAllControllers();//将过滤器放到容器中
             builder.RegisterWebApiFilterProvider(configuration);
             //注册Autofac模型绑定器提供程序。
             builder.RegisterWebApiModelBinderProvider();
