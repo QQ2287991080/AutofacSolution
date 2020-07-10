@@ -2,6 +2,7 @@
 using Autofac.Builder;
 using Autofac.Integration.WebApi;
 using AutofacWebApi.Filters;
+using AutoMapper;
 using Domian;
 using Interfaces;
 using Services;
@@ -42,6 +43,11 @@ namespace AutofacWebApi.App_Start
             builder.Register(c => new MyContext().GetInstance()).As<ISqlSugarClient>().InstancePerLifetimeScope();
 
             builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
+
+
+            //builder.RegisterModule(new AutofacModule(Assembly.Load("AutofacWebApi")));
+            //automapper
+            builder.Register(r => new AutoMapperRegist().Register()).As<IMapper>().SingleInstance();
             //builder.RegisterType<ISqlSugarClient>().InstancePerLifetimeScope();
             //builder.RegisterSource<>
             //获取http配置
