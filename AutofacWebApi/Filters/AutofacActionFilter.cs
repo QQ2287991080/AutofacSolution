@@ -28,7 +28,9 @@ namespace AutofacWebApi.Filters
 
         public Task OnActionExecutingAsync(HttpActionContext actionContext, CancellationToken cancellationToken)
         {
-            if(actionContext.Request.RequestUri.OriginalString.Contains("Get"))
+            //var  source = new CancellationTokenSource(3000);
+            //cancellationToken = source.Token;
+            if (actionContext.Request.RequestUri.OriginalString.Contains("Get"))
             {
                 actionContext.Response = actionContext.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Request not valid");
                 return Task.FromResult(0);

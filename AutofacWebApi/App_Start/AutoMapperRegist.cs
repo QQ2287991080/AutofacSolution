@@ -10,13 +10,8 @@ using System.Threading.Tasks;
 
 namespace AutofacWebApi.App_Start
 {
-   public class AutoMapperRegist
+    public class AutoMapperRegist
     {
-        //public AutoMapperRegist()
-        //{
-        //    CreateMap<BA_SysEnType, EntypeModel>();
-        //    CreateMap<EntypeModel, BA_SysEnType>();
-        //}
         public IMapper Register()
         {
             var configuration = new MapperConfiguration(c =>

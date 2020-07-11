@@ -44,12 +44,11 @@ namespace AutofacWebApi.App_Start
 
             builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
 
-
-            //builder.RegisterModule(new AutofacModule(Assembly.Load("AutofacWebApi")));
             //automapper
-            builder.Register(r => new AutoMapperRegist().Register()).As<IMapper>().SingleInstance();
-            //builder.RegisterType<ISqlSugarClient>().InstancePerLifetimeScope();
-            //builder.RegisterSource<>
+            //module 注入   自动注入，将AutofacWebApi模块中所有的类都configuration，但是还是需要注册有对应的映射关系
+            builder.RegisterModule(new AutofacModule(Assembly.Load("AutofacWebApi")));
+           
+           // builder.Register(r => new AutoMapperRegist().Register()).As<IMapper>().SingleInstance();
             //获取http配置
             var configuration = GlobalConfiguration.Configuration;
             //注册api控制器

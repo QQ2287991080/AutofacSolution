@@ -21,6 +21,7 @@ namespace AutofacWebApi.App_Start
             base.Load(builder);
             var assembliesToScan = this.assembliesToScan as Assembly[] ?? this.assembliesToScan.ToArray();
 
+            //&& a.GetType().IsAssignableFrom(typeof(AutoMapper.Profile))
             var allTypes = assembliesToScan
                           .Where(a => !a.IsDynamic && a.GetName().Name != nameof(AutoMapper))
                           .Distinct() // avoid AutoMapper.DuplicateTypeMapConfigurationException

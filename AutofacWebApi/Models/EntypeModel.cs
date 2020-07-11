@@ -18,5 +18,6 @@ namespace AutofacWebApi.Models
         public Nullable<byte> Level { get; set; }
         public string RefSource { get; set; }
         public string Memo { get; set; }
+        
     }
 }

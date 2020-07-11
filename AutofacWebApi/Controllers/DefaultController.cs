@@ -1,5 +1,6 @@
 ﻿using Domian;
 using Interfaces;
+using Newtonsoft.Json;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -87,8 +88,54 @@ namespace AutofacWebApi.Controllers
         [Route("get3")]
         public async Task<IHttpActionResult> Get3()
         {
-            var list = await _area.QueryAsync();
-            return this.Json(list);
+            HttpClient client = new HttpClient();
+            string key = "79ecf6befa658ddca9fa0f6704e42037";
+            string origins = "121.436772,31.29614";
+            string destination = "121.43912404775621,31.340702564918278";
+            var result = await client.GetAsync($"https://restapi.amap.com/v3/distance?key={key}&type=0&origins={origins}&destination={destination}");
+            var message= await result.Content.ReadAsStringAsync();
+            var map= JsonConvert.DeserializeObject<Map>(message);
+            return this.Json(map);
         }
+    }
+
+    public class ResultsItem
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public string origin_id { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string dest_id { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string distance { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string duration { get; set; }
+    }
+
+    public class Map
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public string status { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string info { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string infocode { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<ResultsItem> results { get; set; }
     }
 }
