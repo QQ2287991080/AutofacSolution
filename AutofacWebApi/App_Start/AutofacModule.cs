@@ -1,5 +1,7 @@
 ﻿using Autofac;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
+using AutoMapper.Extensions.EnumMapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,12 +22,11 @@ namespace AutofacWebApi.App_Start
         {
             base.Load(builder);
             var assembliesToScan = this.assembliesToScan as Assembly[] ?? this.assembliesToScan.ToArray();
-
-            //&& a.GetType().IsAssignableFrom(typeof(AutoMapper.Profile))
             var allTypes = assembliesToScan
                           .Where(a => !a.IsDynamic && a.GetName().Name != nameof(AutoMapper))
                           .Distinct() // avoid AutoMapper.DuplicateTypeMapConfigurationException
                           .SelectMany(a => a.DefinedTypes)
+                          .Where(w=>w.IsAssignableFrom(typeof(IProfile)))//默认继承IProfile,排除不需要configuration的实例
                           .ToArray();
 
             var openTypes = new[] {
@@ -42,7 +43,19 @@ namespace AutofacWebApi.App_Start
                 builder.RegisterType(type.AsType()).InstancePerDependency();
             }
 
-            builder.Register<IConfigurationProvider>(ctx => new MapperConfiguration(cfg => cfg.AddMaps(assembliesToScan)));
+
+            //configuration配置
+            builder.Register<IConfigurationProvider>(ctx =>
+            new MapperConfiguration(cfg =>
+            {
+                cfg.AddMaps(assembliesToScan);
+                cfg.AllowNullCollections = true;//允许空集合
+                cfg.DisableConstructorMapping();//禁止构造函数映射
+                cfg.ShouldUseConstructor = ci => !ci.IsPrivate;//不映射私有构造函数
+                cfg.AddExpressionMapping();//添加 表达式目录映射 AutoMapper.Extensions.ExpressionMapping
+                /*cfg.EnableEnumMappingValidation();*///https://docs.automapper.org/en/latest/Enum-Mapping.html
+            })
+            );
 
             builder.Register<IMapper>(ctx => new Mapper(ctx.Resolve<IConfigurationProvider>(), ctx.Resolve)).InstancePerDependency();
         }

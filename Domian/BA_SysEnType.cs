@@ -19,7 +19,7 @@ namespace Domian
         public Nullable<bool> IsEnd { get; set; }
         public Nullable<byte> Level { get; set; }
         public string RefSource { get; set; }
-        //public string Memo { get; set; }
+        public string Memo { get; set; }
 
     }
 }
